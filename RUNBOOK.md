@@ -152,3 +152,13 @@ agrupando los workers del cluster (buffer 3 s) y avisando también cuando la app
 - Webhook en el servidor: `SLACK_WEBHOOK_URL=...` en `/var/www/pda03-api/shared/.env`.
 - `pm2 uninstall pm2-slack` para no duplicar alertas.
 - Mensaje manual: `curl -X POST -H 'Content-type: application/json' --data '{"text":"hola"}' "$(grep SLACK_WEBHOOK_URL /var/www/pda03-api/shared/.env | cut -d= -f2-)"`
+
+## Fase 9 — Frontend Angular en Azure (Storage static website)
+URL: https://pda06empleadosweb.z47.web.core.windows.net/ → consume https://pda06-brando.duckdns.org/api/v1
+- `frontend/`: Angular 22 (standalone, zoneless, OnPush). Reto 3: `EmployeeService` con `BehaviorSubject` privados + updates inmutables. Reto 4: `EmployeesPage` (smart, `async` pipe) + `EmployeeForm` / `EmployeeTable` (dumb, `@Input`/`@Output`).
+- ⚠️ Azure for Students solo permite `northcentralus, mexicocentral, francecentral, chilecentral, spaincentral` y **Static Web Apps no existe en ninguna** → se usa **Storage Account static website** en `chilecentral`.
+- Recursos: RG `rg-pda06`, Storage `pda06empleadosweb` (StorageV2, LRS, HTTPS only, TLS 1.2, sin acceso público a blobs), static website con 404 → `index.html` (fallback SPA).
+- Suscripción nueva: registrar providers antes (`az provider register -n Microsoft.Storage --wait`), si no → `SubscriptionNotFound`.
+- CI/CD: `.github/workflows/frontend-azure.yml` → build Node 24 + `az storage blob upload-batch` con **SAS solo sobre `$web`** (secrets `AZURE_STORAGE_ACCOUNT`, `AZURE_STORAGE_SAS`, vence 2027-02-28). Assets con hash → cache 1 año; `index.html` → `no-cache`.
+- Storage no permite headers → CSP va en `<meta http-equiv>` y se desactiva `inlineCritical` (su `onload` inline sería bloqueado por la CSP y la app quedaría sin estilos).
+- ⚠️ Subir archivos a `.github/workflows` por git requiere el scope `workflow` en el token de `gh`; alternativa: crear el workflow desde la web de GitHub.
