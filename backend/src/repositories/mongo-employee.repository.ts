@@ -26,7 +26,7 @@ export class EmployeeRepository implements IEmployeeRepository {
   }
 
   async update(id: string, data: Partial<EmpleadoInput>): Promise<Empleado | null> {
-    const doc = await EmpleadoModel.findByIdAndUpdate(id, data, { new: true });
+    const doc = await EmpleadoModel.findByIdAndUpdate(id, data, { returnDocument: 'after' });
     return doc ? toDomain(doc) : null;
   }
 
