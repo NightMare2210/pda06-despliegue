@@ -118,3 +118,16 @@ pm2 install pm2-logrotate
 - `Falta MONGO_URI` → revisar `shared/.env` y `DOTENV_PATH` en el ecosystem.
 - `MongooseServerSelectionError` → la IP elástica no está en Atlas Network Access.
 - 502 Bad Gateway → la app no está arriba en :3000 (`pm2 list`).
+
+## Fase 7 — HTTPS con dominio (Recomendación de la guía)
+1. https://www.duckdns.org → login → reCAPTCHA → subdominio `pda06-brando` → current ip `15.229.143.47`.
+2. Servidor:
+   ```bash
+   sudo sed -i "s/server_name _;/server_name pda06-brando.duckdns.org;/" /etc/nginx/sites-available/default
+   sudo nginx -t && sudo systemctl reload nginx
+   sudo apt-get install -y certbot python3-certbot-nginx
+   sudo certbot --nginx -d pda06-brando.duckdns.org --agree-tos --register-unsafely-without-email --redirect
+   sudo certbot renew --dry-run      # renovación automática vía certbot.timer
+   ```
+3. Resultado: `https://pda06-brando.duckdns.org` (Let's Encrypt, HTTP → 301 → HTTPS).
+4. Hardening extra: `app.disable('x-powered-by')` en `backend/src/app.ts` (no revelar el framework).
