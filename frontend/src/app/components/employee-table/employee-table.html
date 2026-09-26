@@ -1,0 +1,41 @@
+<div class="card">
+  @if (employees.length === 0) {
+    <p class="empty">Todavía no hay empleados. Agregá el primero con el formulario.</p>
+  } @else {
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Cargo</th>
+            <th>Departamento</th>
+            <th class="num">Sueldo</th>
+            <th><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of employees; track e.id) {
+            <tr [class.selected]="e.id === selectedId">
+              <td data-label="Nombre">{{ e.nombre }}</td>
+              <td data-label="Cargo">{{ e.cargo }}</td>
+              <td data-label="Departamento"><span class="tag">{{ e.departamento }}</span></td>
+              <td data-label="Sueldo" class="num">{{ e.sueldo | currency: 'USD' }}</td>
+              <td class="row-actions">
+                <button type="button" class="ghost" (click)="edit.emit(e)">Editar</button>
+                <button
+                  type="button"
+                  class="danger"
+                  (click)="askRemove(e)"
+                  (blur)="confirmId = null"
+                  [disabled]="deletingId === e.id"
+                >
+                  {{ deletingId === e.id ? 'Eliminando…' : confirmId === e.id ? '¿Seguro?' : 'Eliminar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,51 @@
+@if (stats$ | async; as stats) {
+  <section class="stats" aria-label="Resumen">
+    <div class="card stat">
+      <span>Empleados</span>
+      <strong>{{ stats.total }}</strong>
+    </div>
+    <div class="card stat">
+      <span>Departamentos</span>
+      <strong>{{ stats.departamentos }}</strong>
+    </div>
+    <div class="card stat">
+      <span>Nómina mensual</span>
+      <strong>{{ stats.nomina | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+    </div>
+  </section>
+}
+
+<div class="layout">
+  <app-employee-form
+    [employee]="selected()"
+    [saving]="saving()"
+    [serverError]="formError()"
+    (save)="onSave($event)"
+    (cancel)="onCancel()"
+  />
+
+  <section class="list">
+    <header class="list-head">
+      <h2>Personal</h2>
+      <button type="button" class="ghost" (click)="reload()" [disabled]="loading$ | async">
+        {{ (loading$ | async) ? 'Cargando…' : 'Recargar' }}
+      </button>
+    </header>
+
+    @if (error$ | async; as error) {
+      <p class="card alert" role="alert">⚠️ {{ error }}</p>
+    }
+
+    <app-employee-table
+      [employees]="(employees$ | async) ?? []"
+      [selectedId]="selected()?.id ?? null"
+      [deletingId]="deletingId()"
+      (edit)="onEdit($event)"
+      (remove)="onRemove($event)"
+    />
+  </section>
+</div>
+
+@if (toast(); as message) {
+  <div class="toast" role="status">{{ message }}</div>
+}

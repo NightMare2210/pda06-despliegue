@@ -1,0 +1,43 @@
+.topbar {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 1.5rem;
+}
+
+.topbar .wrap {
+  padding-block: 1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: var(--accent-bg);
+  font-size: 1.3rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.brand p {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.footer {
+  padding-block: 2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}

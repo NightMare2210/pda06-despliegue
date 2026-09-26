@@ -1,0 +1,48 @@
+<form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h2>{{ employee ? 'Editar empleado' : 'Nuevo empleado' }}</h2>
+
+  <label>
+    Nombre
+    <input formControlName="nombre" placeholder="Ana Torres" autocomplete="off" />
+    @if (invalid('nombre')) {
+      <small class="err">Mínimo 3 caracteres</small>
+    }
+  </label>
+
+  <label>
+    Cargo
+    <input formControlName="cargo" placeholder="DevOps" autocomplete="off" />
+    @if (invalid('cargo')) {
+      <small class="err">Mínimo 2 caracteres</small>
+    }
+  </label>
+
+  <label>
+    Departamento
+    <input formControlName="departamento" placeholder="TI" autocomplete="off" />
+    @if (invalid('departamento')) {
+      <small class="err">Mínimo 2 caracteres</small>
+    }
+  </label>
+
+  <label>
+    Sueldo (USD)
+    <input formControlName="sueldo" type="number" min="0" step="0.01" />
+    @if (invalid('sueldo')) {
+      <small class="err">Debe ser mayor a 0</small>
+    }
+  </label>
+
+  @if (serverError) {
+    <p class="err server" role="alert">{{ serverError }}</p>
+  }
+
+  <div class="actions">
+    @if (employee) {
+      <button type="button" class="ghost" (click)="cancel.emit()" [disabled]="saving">Cancelar</button>
+    }
+    <button type="submit" class="primary" [disabled]="saving">
+      {{ saving ? 'Guardando…' : employee ? 'Actualizar' : 'Agregar' }}
+    </button>
+  </div>
+</form>
