@@ -57,7 +57,14 @@ export class EmployeesPage implements OnInit {
 
   onSave(input: EmployeeInput): void {
     const current = this.selected();
-    const request$ = current ? this.service.update(current.id, input) : this.service.create(input);
+    // En una edición solo se envían los campos que realmente cambiaron (PUT parcial → auditoría precisa)
+    const changes = current ? diff(current, input) : input;
+    if (current && Object.keys(changes).length === 0) {
+      this.selected.set(null);
+      this.notify('Sin cambios para guardar');
+      return;
+    }
+    const request$ = current ? this.service.update(current.id, changes) : this.service.create(input);
 
     this.saving.set(true);
     this.formError.set(null);
@@ -93,4 +100,9 @@ export class EmployeesPage implements OnInit {
     this.toast.set(message);
     setTimeout(() => this.toast.set(null), 3000);
   }
+}
+
+function diff(original: Employee, next: EmployeeInput): Partial<EmployeeInput> {
+  const keys = Object.keys(next) as (keyof EmployeeInput)[];
+  return Object.fromEntries(keys.filter((k) => next[k] !== original[k]).map((k) => [k, next[k]]));
 }
