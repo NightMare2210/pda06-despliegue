@@ -131,3 +131,15 @@ pm2 install pm2-logrotate
    ```
 3. Resultado: `https://pda06-brando.duckdns.org` (Let's Encrypt, HTTP → 301 → HTTPS).
 4. Hardening extra: `app.disable('x-powered-by')` en `backend/src/app.ts` (no revelar el framework).
+5. ⚠️ Certbot deja el bloque :80 con `return 404` para cualquier Host ≠ dominio → `http://IP` deja de andar.
+   Reemplazar ese bloque por:
+   ```nginx
+   server {
+       listen 80 default_server;
+       listen [::]:80 default_server;
+       server_name _;
+       return 301 https://pda06-brando.duckdns.org$request_uri;
+   }
+   ```
+6. ⚠️ dotenv v18 imprime `◇ injected env` por **stderr** → `pm2-slack` lo manda como `error` (falso positivo).
+   Fix: `DOTENV_QUIET: 'true'` en `env_production` del ecosystem.

@@ -15,6 +15,7 @@ module.exports = {
         PORT: 3000,
         // Secretos (MONGO_URI) fuera del repo: los carga dotenv desde shared/.env en el servidor
         DOTENV_PATH: `${APP_PATH}/shared/.env`,
+        DOTENV_QUIET: 'true', // dotenv loguea por stderr y pm2-slack lo reporta como 'error'
       },
 
       // Logs y Monitoreo del Servidor
