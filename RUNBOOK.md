@@ -109,7 +109,7 @@ pm2 install pm2-logrotate
 ## Pruebas (evidencia para el informe)
 | Prueba | Cómo | Esperado |
 |---|---|---|
-| Red | `http://IP/` y `http://IP/api/v1/empleados` | JSON `{status:"ok"}` y lista; `http://IP:3000` **no** responde |
+| Red | `http://IP/` y `http://IP/api/v1/employees` | JSON `{status:"ok"}` y lista; `http://IP:3000` **no** responde |
 | Resiliencia | `pm2 stop pda03-api` → `pm2 start pda03-api` | Alerta en Slack |
 | CI/CD | Cambiar `service` en la ruta `/` de `backend/src/app.ts`, push, `pm2 deploy ecosystem.config.cjs production` | Cambio visible sin entrar a AWS |
 
