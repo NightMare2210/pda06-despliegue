@@ -43,6 +43,7 @@ module.exports = {
       error_file: `${APP_PATH}/shared/logs/alertas-err.log`,
       out_file: `${APP_PATH}/shared/logs/alertas-out.log`,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      merge_logs: true,
     },
   ],
 
