@@ -1,0 +1,10 @@
+{
+  "name": "pda03-alertas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Notificador PM2 -> Slack con formato propio",
+  "main": "notifier.cjs",
+  "dependencies": {
+    "pm2": "^7.0.4"
+  }
+}

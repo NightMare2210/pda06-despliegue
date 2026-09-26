@@ -143,3 +143,12 @@ pm2 install pm2-logrotate
    ```
 6. ⚠️ dotenv v18 imprime `◇ injected env` por **stderr** → `pm2-slack` lo manda como `error` (falso positivo).
    Fix: `DOTENV_QUIET: 'true'` en `env_production` del ecosystem.
+
+## Fase 8 — Notificador propio (reemplaza pm2-slack)
+`pm2-slack` tiene formato fijo (`pda03-api exit null`) y manda un mensaje por worker.
+`alerts/notifier.cjs` escucha el bus de PM2 (`process:event`, `process:exception`, `log:err`) y envía a Slack un mensaje legible,
+agrupando los workers del cluster (buffer 3 s) y avisando también cuando la app se recupera (✅).
+- Corre como app `pda03-alertas` (fork, 1 instancia) desde el mismo `ecosystem.config.cjs` → se despliega por CI/CD.
+- Webhook en el servidor: `SLACK_WEBHOOK_URL=...` en `/var/www/pda03-api/shared/.env`.
+- `pm2 uninstall pm2-slack` para no duplicar alertas.
+- Mensaje manual: `curl -X POST -H 'Content-type: application/json' --data '{"text":"hola"}' "$(grep SLACK_WEBHOOK_URL /var/www/pda03-api/shared/.env | cut -d= -f2-)"`

@@ -15,7 +15,7 @@ module.exports = {
         PORT: 3000,
         // Secretos (MONGO_URI) fuera del repo: los carga dotenv desde shared/.env en el servidor
         DOTENV_PATH: `${APP_PATH}/shared/.env`,
-        DOTENV_QUIET: 'true', // dotenv loguea por stderr y pm2-slack lo reporta como 'error'
+        DOTENV_QUIET: 'true', // dotenv loguea por stderr y el notificador lo reportaría como 'error'
       },
 
       // Logs y Monitoreo del Servidor
@@ -23,6 +23,26 @@ module.exports = {
       out_file: `${APP_PATH}/shared/logs/out.log`,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
+    },
+    {
+      // Alertas PM2 -> Slack con formato propio (SLACK_WEBHOOK_URL vive en shared/.env)
+      name: 'pda03-alertas',
+      cwd: `${APP_PATH}/current/alerts`,
+      script: 'notifier.cjs',
+      instances: 1,
+      exec_mode: 'fork',
+
+      env_production: {
+        DOTENV_PATH: `${APP_PATH}/shared/.env`,
+        ALERT_APPS: 'pda03-api',
+        ALERT_SERVER: 'aws-pda06 (sa-east-1)',
+        ALERT_PUBLIC_URL: 'https://pda06-brando.duckdns.org',
+        ALERT_TZ: 'America/Guayaquil',
+      },
+
+      error_file: `${APP_PATH}/shared/logs/alertas-err.log`,
+      out_file: `${APP_PATH}/shared/logs/alertas-out.log`,
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
     },
   ],
 
@@ -36,7 +56,7 @@ module.exports = {
       path: APP_PATH,
       'pre-setup': 'mkdir -p /var/www/pda03-api/shared/logs',
       'post-deploy':
-        'cd backend && npm ci --include=dev && npm run build && cd .. && pm2 reload ecosystem.config.cjs --env production && pm2 save',
+        'cd backend && npm ci --include=dev && npm run build && cd ../alerts && npm ci --omit=dev && cd .. && pm2 reload ecosystem.config.cjs --env production && pm2 save',
       ssh_options: 'StrictHostKeyChecking=accept-new',
       key: '~/.ssh/pda06-aws.pem',
     },
