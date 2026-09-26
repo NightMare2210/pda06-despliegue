@@ -162,3 +162,12 @@ URL: https://pda06empleadosweb.z47.web.core.windows.net/ → consume https://pda
 - CI/CD: `.github/workflows/frontend-azure.yml` → build Node 24 + `az storage blob upload-batch` con **SAS solo sobre `$web`** (secrets `AZURE_STORAGE_ACCOUNT`, `AZURE_STORAGE_SAS`, vence 2027-02-28). Assets con hash → cache 1 año; `index.html` → `no-cache`.
 - Storage no permite headers → CSP va en `<meta http-equiv>` y se desactiva `inlineCritical` (su `onload` inline sería bloqueado por la CSP y la app quedaría sin estilos).
 - ⚠️ Subir archivos a `.github/workflows` por git requiere el scope `workflow` en el token de `gh`; alternativa: crear el workflow desde la web de GitHub.
+
+## Fase 10 — Eventos de negocio en Slack (Observer + DI + TDD)
+- Base de la práctica 5: `EmployeeController` con DI (repositorio inyectado) + Jest. TypeScript fijado en **v6**: `ts-jest` no funciona con TS 7 (port nativo en Go, sin API JS del compilador).
+- `IEventPublisher` (Observer) inyectado en el controlador → emite `employee.created | updated | deleted` **después** de responder (fire-and-forget: si Slack falla, la API responde igual).
+- Snapshot **sin sueldo**; en updates solo se envían los *nombres* de los campos cambiados.
+- `SlackAuditPublisher`: usa `AUDIT_SLACK_WEBHOOK_URL` (canal propio) o cae a `SLACK_WEBHOOK_URL`; timeout 5 s; errores → `[audit]` en `err.log`.
+- `repository.delete()` ahora devuelve el empleado eliminado (para informar quién se borró).
+- Quality gate: `post-deploy` corre `npm test` antes del build; si falla, no se recarga la app.
+- 19 tests (8 de la práctica 5 + 5 de eventos en el controlador + 6 del publicador).
