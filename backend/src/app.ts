@@ -12,7 +12,7 @@ app.set('trust proxy', 1);
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());
 app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: 'pda03-api', env: process.env.NODE_ENV ?? 'development' });
+  res.json({ status: 'ok', service: 'pda03-api', version: '1.1.0', env: process.env.NODE_ENV ?? 'development' });
 });
 app.use('/api/v1', empleadosRoutes);
 app.use(errorHandler);
