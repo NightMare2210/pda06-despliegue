@@ -1,0 +1,45 @@
+name: Frontend → Azure Storage (static website)
+
+on:
+  push:
+    branches: [main]
+    paths: ['frontend/**', '.github/workflows/frontend-azure.yml']
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    env:
+      DIST: frontend/dist/empleados-web/browser
+      ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+      SAS: ${{ secrets.AZURE_STORAGE_SAS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build Angular
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      # SAS con permisos solo sobre el contenedor $web (sin credenciales de cuenta)
+      - name: Upload assets (cache largo, nombres con hash)
+        run: >
+          az storage blob upload-batch --account-name "$ACCOUNT" --sas-token "$SAS"
+          -d '$web' -s "$DIST" --overwrite --pattern '*.[jc]s*'
+          --content-cache-control 'public, max-age=31536000, immutable' --only-show-errors
+
+      - name: Upload index.html y resto (sin cache)
+        run: >
+          az storage blob upload-batch --account-name "$ACCOUNT" --sas-token "$SAS"
+          -d '$web' -s "$DIST" --overwrite --pattern '*[!sj]'
+          --content-cache-control 'no-cache' --only-show-errors
+
+      - name: Smoke test
+        run: curl -fsS "https://${ACCOUNT}.z47.web.core.windows.net/" | grep -q '<app-root>'
