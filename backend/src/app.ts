@@ -5,6 +5,7 @@ import empleadosRoutes from './routes/empleados.routes.js';
 import { errorHandler } from './middlewares/error-handler.middleware.js';
 
 const app = express();
+app.disable('x-powered-by');
 
 app.use(cors());
 app.set('trust proxy', 1);
