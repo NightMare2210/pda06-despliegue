@@ -30,8 +30,8 @@ export class EmployeeRepository implements IEmployeeRepository {
     return doc ? toDomain(doc) : null;
   }
 
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string): Promise<Empleado | null> {
     const doc = await EmpleadoModel.findByIdAndDelete(id);
-    return doc !== null;
+    return doc ? toDomain(doc) : null;
   }
 }

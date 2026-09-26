@@ -57,7 +57,7 @@ module.exports = {
       path: APP_PATH,
       'pre-setup': 'mkdir -p /var/www/pda03-api/shared/logs',
       'post-deploy':
-        'cd backend && npm ci --include=dev && npm run build && cd ../alerts && npm ci --omit=dev && cd .. && pm2 reload ecosystem.config.cjs --env production && pm2 save',
+        'cd backend && npm ci --include=dev && npm test && npm run build && cd ../alerts && npm ci --omit=dev && cd .. && pm2 reload ecosystem.config.cjs --env production && pm2 save',
       ssh_options: 'StrictHostKeyChecking=accept-new',
       key: '~/.ssh/pda06-aws.pem',
     },

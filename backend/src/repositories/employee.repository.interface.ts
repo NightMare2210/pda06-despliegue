@@ -13,5 +13,5 @@ export interface IEmployeeRepository {
   findById(id: string): Promise<Empleado | null>;
   create(data: EmpleadoInput): Promise<Empleado>;
   update(id: string, data: Partial<EmpleadoInput>): Promise<Empleado | null>;
-  delete(id: string): Promise<boolean>;
+  delete(id: string): Promise<Empleado | null>;
 }
